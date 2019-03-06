@@ -9,7 +9,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
         http://www.springframework.org/schema/jdbc
         http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd">
-
+<!-- 
 	<mvc:annotation-driven>
         <mvc:message-converters>
 			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
@@ -24,7 +24,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
             <ref bean="fastJsonHttpMessageConverter" />  
         </mvc:message-converters>
 	</mvc:annotation-driven>
-	
+-->	
 	<bean id="fastJsonHttpMessageConverter" class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter4">
         <property name="supportedMediaTypes">
             <list>
@@ -46,5 +46,5 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans
         	</bean>
         </property>
     </bean>
-    
+     
 </beans>

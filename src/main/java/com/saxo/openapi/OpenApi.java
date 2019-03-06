@@ -6,7 +6,6 @@ import org.springframework.context.annotation.ImportResource;
 
 @SpringBootApplication(scanBasePackages = { "com.saxo.openapi" })
 @ImportResource(locations = { "classpath:spring-mvc.xml" })
-
 public class OpenApi {
 	public static void main(String[] args) {
 		SpringApplication.run(OpenApi.class, args);

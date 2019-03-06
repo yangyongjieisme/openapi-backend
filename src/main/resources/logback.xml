@@ -23,15 +23,23 @@
 		</rollingPolicy>
 
 	</appender>
-
-	<logger name="com.myrepublic" level="debug" additivity="false">
+	
+	 <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <Pattern>[%d{yyyy-MM-dd HH:mm:ss.SSS}] [%5level] [%thread] %logger{0} %msg%n</Pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+    </appender>
+	
+	<logger name="com.saxo" level="debug" additivity="false">
 		<appender-ref ref="FILE-AUDIT" />
 	</logger>
 	<logger name="org.spring" level="error" additivity="false">
 		<appender-ref ref="FILE-AUDIT" />
 	</logger>
 
-	<root level="info">
+	<root level="debug">
+		<appender-ref ref="console" />
 		<appender-ref ref="FILE-AUDIT" />
 	</root>
 

@@ -44,14 +44,14 @@ public class ThirdServiceAPI {
 	
 	public static JSONObject myInfo(String token) throws Exception{
 		token=token==null?thirdToken:token;
-		return JSON.parseObject(getResponse("GET",userMe,null,null,token));
+		return JSON.parseObject(getResponse(0,"GET",userMe,null,null,token));
 		
 	}
 	
-	private static String getResponse(String method, String url, Map<String, Object> map, String jsonParamStr,String header) throws Exception {
+	public static String getResponse(int secure,String method, String url, Map<String, Object> map, String jsonParamStr,String header) throws Exception {
 
 		executor = Executors.newSingleThreadExecutor();
-		Future<String> future = executor.submit(new ThirdCallingTask(method,url, map, jsonParamStr,header));
+		Future<String> future = executor.submit(new ThirdCallingTask(secure,method,url, map, jsonParamStr,header));
 
 		String response = null;
 		try {
@@ -72,4 +72,7 @@ public class ThirdServiceAPI {
 		}
 		return response;
 	}
+	
+	
+	
 }

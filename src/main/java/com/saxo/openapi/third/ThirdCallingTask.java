@@ -16,6 +16,7 @@ public class ThirdCallingTask implements Callable<String> {
 	private Map<String, Object> map;
 	private String json = null;
 	private String header = null;
+	private int secure = 0;
 
 	/**
 	 * @param url
@@ -32,21 +33,24 @@ public class ThirdCallingTask implements Callable<String> {
 	 * @param map
 	 * @param json
 	 */
-	public ThirdCallingTask(String method, String url, Map<String, Object> map, String json) {
+	public ThirdCallingTask(int secure, String method, String url, Map<String, Object> map, String json) {
 		super();
 		this.method = method;
 		this.url = url;
 		this.map = map;
 		this.json = json;
+		this.secure = secure;
 	}
 
-	public ThirdCallingTask(String method, String url, Map<String, Object> map, String json, String header) {
+	public ThirdCallingTask(int secure, String method, String url, Map<String, Object> map, String json,
+			String header) {
 		super();
 		this.method = method;
 		this.url = url;
 		this.map = map;
 		this.json = json;
 		this.header = header;
+		this.secure = secure;
 	}
 
 	/*
@@ -56,10 +60,9 @@ public class ThirdCallingTask implements Callable<String> {
 	 */
 	@Override
 	public String call() throws Exception {
-		
-		return HttpClientUtil.processRequest(method,url, map, json,header);
-		
+
+		return HttpClientUtil.processRequest(secure, method, url, map, json, header);
+
 	}
 
-	
 }

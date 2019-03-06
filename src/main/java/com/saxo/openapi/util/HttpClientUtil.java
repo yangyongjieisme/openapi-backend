@@ -5,6 +5,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Consts;
 import org.apache.http.HttpEntity;
@@ -21,6 +24,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -29,32 +33,34 @@ import org.apache.http.util.EntityUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.saxo.openapi.weixin.MyX509TrustManager;
+
 /**
- * @author lotey
- * @date 2016年7月14日 下午12:12:38
- * @desc HTTP请求工具类
+ * @author
+ * @date 
+ * @desc HTTP
  */
 public class HttpClientUtil {
 
 	private static Logger logger = LogManager.getLogger(HttpClientUtil.class);
 
 	/**
-	 * HTTP GET请求
+	 * HTTP GET
 	 * 
-	 * @param baseUrl  请求基本路径，即不带参数的路径
-	 * @param paramMap 参数集合
+	 * @param baseUrl  
+	 * @param paramMap 
 	 */
 	public static String getRequest(String baseUrl, Map<String, Object> paramMap, String header) throws Exception {
-		// 创建httpclient实例，用于发送请求
+		
 		CloseableHttpClient client = HttpClients.createDefault();
 		HttpGet httpGet = new HttpGet(baseUrl);
-		// 设置超时时间
+		
 		RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(3000).setConnectionRequestTimeout(1000)
 				.setSocketTimeout(5000).build();
 		httpGet.setConfig(requestConfig);
 		httpGet.setHeader("Authorization", "Bearer " + header);
 		try {
-			// 封装参数列表
+			
 			if (paramMap != null && paramMap.size() > 0) {
 				URIBuilder builder = new URIBuilder().setPath(baseUrl);
 				List<NameValuePair> paramList = new ArrayList<NameValuePair>();
@@ -66,17 +72,17 @@ public class HttpClientUtil {
 							entry.getValue() instanceof String ? entry.getValue() : String.valueOf(entry.getValue()));
 					paramList.add(nameValuePair);
 				}
-				// 追加参数
+				
 				builder.addParameters(paramList);
-				// 设置GET请求URL
+				
 				httpGet.setURI(builder.build());
 			}
-			// 执行请求返回结果集
+			
 			CloseableHttpResponse response = client.execute(httpGet);
-			// 服务器返回码
+			
 			int status_code = response.getStatusLine().getStatusCode();
 			logger.info("==========================调用状态码：{}==========================", status_code);
-			// 服务器返回内容
+			
 			String respStr = null;
 			HttpEntity responseEntity = response.getEntity();
 			if (responseEntity != null) {
@@ -85,7 +91,7 @@ public class HttpClientUtil {
 			logger.info("=========================={}开始==========================", CommonUtil.getCurrentDateTimeStr());
 			logger.info("==========================结果集：{}==========================", respStr);
 			logger.info("=========================={}结束==========================", CommonUtil.getCurrentDateTimeStr());
-			// 释放资源
+			
 			EntityUtils.consume(responseEntity);
 			return respStr;
 		} catch (Exception e) {
@@ -95,22 +101,22 @@ public class HttpClientUtil {
 	}
 
 	/**
-	 * HTTP POST请求
+	 * HTTP POST
 	 * 
-	 * @param baseUrl  请求基本路径，即不带参数的路径
-	 * @param paramMap 参数集合
+	 * @param baseUrl  
+	 * @param paramMap 
 	 */
 	public static String postRequest(String baseUrl, Map<String, Object> paramMap) {
-		// 创建httpclient实例，用于发送请求
+		
 		CloseableHttpClient client = HttpClients.createDefault();
-		// 创建post请求
+	
 		HttpPost httpPost = new HttpPost(baseUrl);
-		// 设置超时时间
+		
 		RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(3000).setConnectionRequestTimeout(1000)
 				.setSocketTimeout(5000).build();
 		httpPost.setConfig(requestConfig);
 		try {
-			// 封装参数列表
+			
 			if (paramMap != null && paramMap.size() > 0) {
 				List<NameValuePair> paramList = new ArrayList<NameValuePair>();
 				NameValuePair nameValuePair = null;
@@ -125,12 +131,12 @@ public class HttpClientUtil {
 				httpPost.setEntity(entity);
 			}
 			logger.info("==========================发送信息：{}，datamap:{}==========================", baseUrl, paramMap);
-			// 执行请求返回结果集
+			
 			CloseableHttpResponse response = client.execute(httpPost);
-			// 服务器返回码
+			
 			int status_code = response.getStatusLine().getStatusCode();
 			logger.info("==========================调用状态码：{}==========================", status_code);
-			// 服务器返回内容
+			
 			String respStr = null;
 			HttpEntity responseEntity = response.getEntity();
 			if (responseEntity != null) {
@@ -141,7 +147,7 @@ public class HttpClientUtil {
 			logger.debug("==========================结果集：{}==========================", respStr);
 			logger.debug("=========================={}结束==========================",
 					CommonUtil.getCurrentDateTimeStr());
-			// 释放资源
+			
 			EntityUtils.consume(responseEntity);
 			return respStr;
 		} catch (Exception e) {
@@ -151,22 +157,22 @@ public class HttpClientUtil {
 	}
 
 	/**
-	 * HTTP POST并写参数请求
+	 * HTTP POST
 	 * 
-	 * @param baseUrl  请求基本路径，即不带参数的路径
-	 * @param paramMap 参数集合
+	 * @param baseUrl
+	 * @param paramMap 
 	 */
 	public static String postJsonRequest(String baseUrl, Map<String, Object> paramMap, String jsonParamStr) {
-		// 创建httpclient实例，用于发送请求
+		
 		CloseableHttpClient client = HttpClients.createDefault();
-		// 创建post请求
+		
 		HttpPost httpPost = new HttpPost(baseUrl);
-		// 设置超时时间
+		
 		RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(3000).setConnectionRequestTimeout(1000)
 				.setSocketTimeout(5000).build();
 		httpPost.setConfig(requestConfig);
 		try {
-			// 封装参数列表
+			
 			if (paramMap != null && paramMap.size() > 0) {
 				Iterator ite = paramMap.entrySet().iterator();
 				while (ite.hasNext()) {
@@ -183,12 +189,12 @@ public class HttpClientUtil {
 				httpPost.setEntity(entity);
 			}
 			httpPost.setEntity(entity);
-			// 执行请求返回结果集
+			
 			CloseableHttpResponse response = client.execute(httpPost);
-			// 服务器返回码
+			
 			int status_code = response.getStatusLine().getStatusCode();
 			logger.info("==========================调用状态码：{}==========================", status_code);
-			// 服务器返回内容
+			
 			String respStr = null;
 			HttpEntity responseEntity = response.getEntity();
 			if (responseEntity != null) {
@@ -197,7 +203,7 @@ public class HttpClientUtil {
 			logger.info("=========================={}开始==========================", CommonUtil.getCurrentDateTimeStr());
 			logger.info("==========================结果集：{}==========================", respStr);
 			logger.info("=========================={}结束==========================", CommonUtil.getCurrentDateTimeStr());
-			// 释放资源
+			
 			EntityUtils.consume(responseEntity);
 			return respStr;
 		} catch (Exception e) {
@@ -206,14 +212,17 @@ public class HttpClientUtil {
 		return null;
 	}
 
-	public static String processRequest(String method, String baseUrl, Map<String, Object> paramMap,
+	public static String processRequest(int secure, String method, String baseUrl, Map<String, Object> paramMap,
 			String jsonParamStr, String header) {
-		// 创建httpclient实例，用于发送请求
+		
 		CloseableHttpClient client = HttpClients.createDefault();
-		// 创建请求
+		if (secure == 1) {
+			client = HttpClients.custom().setSSLSocketFactory(useTrustingTrustManager()).build();
+		}
+		
 		HttpRequestBase httpReq = creatRequest(method, baseUrl);
 
-		// 设置超时时间
+		
 		RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(3000).setConnectionRequestTimeout(1000)
 				.setSocketTimeout(5000).build();
 		httpReq.setConfig(requestConfig);
@@ -222,7 +231,7 @@ public class HttpClientUtil {
 		}
 
 		try {
-			// 封装参数列表
+			
 			if (paramMap != null) {
 				URIBuilder builder = new URIBuilder().setPath(baseUrl);
 				List<NameValuePair> paramList = new ArrayList<NameValuePair>();
@@ -234,9 +243,9 @@ public class HttpClientUtil {
 							entry.getValue() instanceof String ? entry.getValue() : String.valueOf(entry.getValue()));
 					paramList.add(nameValuePair);
 				}
-				// 追加参数
+				
 				builder.addParameters(paramList);
-				// 设置GET请求URL
+				
 				httpReq.setURI(builder.build());
 			}
 			StringEntity entity = null;
@@ -249,12 +258,12 @@ public class HttpClientUtil {
 			if (httpReq instanceof HttpPost) {
 				((HttpPost) httpReq).setEntity(entity);
 			}
-			// 执行请求返回结果集
+			
 			CloseableHttpResponse response = client.execute(httpReq);
-			// 服务器返回码
+			
 			int status_code = response.getStatusLine().getStatusCode();
 			logger.info("==========================调用状态码：{}==========================", status_code);
-			// 服务器返回内容
+			
 			String respStr = null;
 			HttpEntity responseEntity = response.getEntity();
 			if (responseEntity != null) {
@@ -263,13 +272,29 @@ public class HttpClientUtil {
 			logger.info("=========================={}开始==========================", CommonUtil.getCurrentDateTimeStr());
 			logger.info("==========================结果集：{}==========================", respStr);
 			logger.info("=========================={}结束==========================", CommonUtil.getCurrentDateTimeStr());
-			// 释放资源
+			
 			EntityUtils.consume(responseEntity);
 			return respStr;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public static SSLConnectionSocketFactory useTrustingTrustManager() {
+		try {
+			// First create a trust manager that won't care.
+			MyX509TrustManager trustManager = new MyX509TrustManager();
+			SSLContext ctx = SSLContext.getInstance("TLS");
+			ctx.init(null, new TrustManager[] { trustManager }, null);
+			// ssl socket factory
+			SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(ctx, new String[] { "TLS" }, null,
+					SSLConnectionSocketFactory.getDefaultHostnameVerifier());
+			return sslsf;
+		} catch (Throwable e) {
+			logger.error(e.getMessage(), e);
+			return null;
+		}
 	}
 
 	private static HttpRequestBase creatRequest(String method, String url) {
